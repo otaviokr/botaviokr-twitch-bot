@@ -1,3 +1,8 @@
+# Project specific
+/config/*
+!/config/.gitkeep
+!/config/botaviokr-twitch-bot.yml.template
+
 # Binaries for programs and plugins
 *.exe
 *.exe~

@@ -1,0 +1,23 @@
+irc:
+  target: "irc.chat.twitch.tv:6697"
+  ssl: true
+  nickname: "already-register-username"
+  # Get the OAuth password at https://twitchapps.com/tmi/
+  password: "oauth:1234567890abcdef"
+  channels:
+    - "#somechannel01"
+
+log:
+  level: "debug"
+  path: "botaviokr-twitch-bot.log"
+
+triggers:
+
+  bot:
+   	owner: "Otavio_KR"
+     repository: "github.com/otaviokr/botaviokr-twitch-bot"
+
+  streamholics:
+    friends:
+      - otaviokr_kr
+      - some_other_user
