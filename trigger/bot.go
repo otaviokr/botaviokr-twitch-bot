@@ -19,3 +19,16 @@ func Bot(owner, repo string) hbot.Trigger {
 		},
 	}
 }
+
+// Commands will present all the commands the bot responds to.
+func Commands() hbot.Trigger {
+	return hbot.Trigger{
+		Condition: func (b *hbot.Bot, m *hbot.Message) bool {
+			return strings.EqualFold(m.Command, "PRIVMSG") && strings.EqualFold(strings.TrimSpace(m.Content), "!commands")
+		},
+		Action: func (b *hbot.Bot, m *hbot.Message) bool {
+			b.Reply(m, "Estes são os comandos que eu entendo:\n!bot - meus detalhes\n!hi - manda um oi\n!hello - manda um olá\n!twitter - me acha lá\n!github - meus repositórios")
+			return true
+		},
+	}
+}

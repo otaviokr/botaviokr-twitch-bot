@@ -8,6 +8,7 @@ import (
 	hbot "github.com/otaviokr/hellivabot"
 	log "github.com/sirupsen/logrus"
 
+	"github.com/otaviokr/botaviokr-twitch-bot/mqtt"
 	"github.com/otaviokr/botaviokr-twitch-bot/trigger"
 	"github.com/spf13/viper"
 )
@@ -42,6 +43,22 @@ func main() {
 	}
 	log.SetLevel(logLevel)
 
+	broker := viper.GetString("mqtt.broker")
+	clientId := viper.GetString("mqtt.clientId")
+	port := viper.GetInt("mqtt.port")
+	mqttClient, err := mqtt.NewClient(clientId, broker, port)
+	if err != nil {
+		log.WithFields(
+			log.Fields{
+				"err": err.Error(),
+				"clientId": clientId,
+				"broker": broker,
+				"port": port,
+			}).Error("failed to instantiate new MQTT object")
+	} else {
+		defer mqttClient.Client.Disconnect(500)
+	}
+
 	target := viper.GetString("irc.target")
 	nickname := viper.GetString("irc.nickname")
 
@@ -66,12 +83,26 @@ func main() {
 			}).Fatal("failed to connect")
 	}
 
+	guestbookTopic := viper.GetString("triggers.guestbook.topic")
+	mybot.AddTrigger(trigger.GuestBook(mqttClient, guestbookTopic))
+
 	owner := viper.GetString("triggers.bot.owner")
 	repo := viper.GetString("triggers.bot.repository")
 	mybot.AddTrigger(trigger.Bot(owner, repo))
 
 	streamHolicsFriends := viper.GetStringSlice("triggers.streamholics.friends")
 	mybot.AddTrigger(trigger.StreamHolicsJoin(streamHolicsFriends))
+
+	github := viper.GetString("triggers.socialmedia.github")
+	mybot.AddTrigger(trigger.Github(github))
+
+	twitter := viper.GetString("triggers.socialmedia.twitter")
+	mybot.AddTrigger(trigger.Twitter(twitter))
+
+	// youtube := viper.GetString("triggers.socialmedia.youtube")
+	// mybot.AddTrigger(trigger.Youtube(youtube))
+
+	mybot.AddTrigger(trigger.Commands())
 
 	mybot.AddTrigger(trigger.SayHello())
 
@@ -81,6 +112,7 @@ func main() {
 // ReadConfig will parse the properties file.
 func readConfig() {
 	viper.AddConfigPath("./config")
+	viper.AddConfigPath(".")
 	viper.SetConfigName("botaviokr-twitch-bot")
 	viper.SetConfigType("yaml")
 
