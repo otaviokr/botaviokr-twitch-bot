@@ -83,29 +83,14 @@ func main() {
 			}).Fatal("failed to connect")
 	}
 
-	guestbookTopic := viper.GetString("triggers.guestbook.topic")
-	mybot.AddTrigger(trigger.GuestBook(mqttClient, guestbookTopic))
-
-	owner := viper.GetString("triggers.bot.owner")
-	repo := viper.GetString("triggers.bot.repository")
-	mybot.AddTrigger(trigger.Bot(owner, repo))
-
-	streamHolicsFriends := viper.GetStringSlice("triggers.streamholics.friends")
-	mybot.AddTrigger(trigger.StreamHolicsJoin(streamHolicsFriends))
-
-	github := viper.GetString("triggers.socialmedia.github")
-	mybot.AddTrigger(trigger.Github(github))
-
-	twitter := viper.GetString("triggers.socialmedia.twitter")
-	mybot.AddTrigger(trigger.Twitter(twitter))
-
-	// youtube := viper.GetString("triggers.socialmedia.youtube")
-	// mybot.AddTrigger(trigger.Youtube(youtube))
-
+	mybot.AddTrigger(trigger.GuestBook(mqttClient))
+	mybot.AddTrigger(trigger.Bot())
+	mybot.AddTrigger(trigger.StreamHolicsJoin())
+	mybot.AddTrigger(trigger.Github())
+	mybot.AddTrigger(trigger.Twitter())
+	// mybot.AddTrigger(trigger.Youtube())
 	mybot.AddTrigger(trigger.Commands())
-
 	mybot.AddTrigger(trigger.SayHello())
-
 	mybot.Run()
 }
 
