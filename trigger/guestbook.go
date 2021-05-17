@@ -8,6 +8,7 @@ import (
 	"github.com/otaviokr/botaviokr-twitch-bot/mqtt"
 	hbot "github.com/otaviokr/hellivabot"
 	log "github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
 )
 
 type Guestbook struct {
@@ -16,12 +17,13 @@ type Guestbook struct {
 }
 
 // Guestbook keeps an eye on who is in the chat.
-func GuestBook(mqttClient *mqtt.MqttClient, topic string) hbot.Trigger {
+func GuestBook(mqttClient *mqtt.MqttClient) hbot.Trigger {
 	return hbot.Trigger{
 		Condition: func (b *hbot.Bot, m *hbot.Message) bool {
 			return strings.EqualFold(m.Command, "JOIN")
 		},
 		Action: func (b *hbot.Bot, m *hbot.Message) bool {
+			topic := viper.GetString("triggers.guestbook.topic")
 			timestamp := time.Now().Unix()
 			if mqttClient == nil {
 				log.WithFields(

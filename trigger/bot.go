@@ -5,16 +5,21 @@ import (
 	"strings"
 
 	hbot "github.com/otaviokr/hellivabot"
+	"github.com/spf13/viper"
 )
 
 // Bot will respond some details about the bot
-func Bot(owner, repo string) hbot.Trigger {
+func Bot() hbot.Trigger {
 	return hbot.Trigger{
 		Condition: func (b *hbot.Bot, m *hbot.Message) bool {
 			return strings.EqualFold(m.Command, "PRIVMSG") && strings.EqualFold(strings.TrimSpace(m.Content), "!bot")
 		},
 		Action: func (b *hbot.Bot, m *hbot.Message) bool {
-			b.Reply(m, fmt.Sprintf("Oi, eu sou o Bot do %s. Se quiser realmente me conhecer, o meu código está disponível em %s", owner, repo))
+			b.Reply(
+				m, fmt.Sprintf(
+					"Oi, eu sou o Bot do %s. Se quiser realmente me conhecer, o meu código está disponível em %s",
+					viper.GetString("triggers.bot.owner"),
+					viper.GetString("triggers.bot.repository")))
 			return false
 		},
 	}
